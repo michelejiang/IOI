@@ -1,32 +1,35 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-
 int maxx = 0;
+int turisti[1000];
+int volontari[1000];
 
-void dp(int turisti[], int volontari[], int n, int m, int i, int j, int v){
-	if(i == n){
-		maxx = max(maxx, v);
-		return ;
+int dp(int n, int m, int i, int j, vector< vector <int> > &memo){
+	if(i == n && j == m){
+		return 0;
 	}
-	if(j == m){
-		v = v + n - i - 1;
-		maxx = max(maxx, v);
-		return ;
+	int &ret = memo[i][j];
+	if(ret != -1)return ret;
+	
+	if(i < n && j < m && volontari[j]>turisti[i]){
+		ret = max(dp(n, m, i+1, j+1, memo) + 2, ret);
 	}
-	dp(turisti, volontari, n, m, i+1, j, v+1);
-	if(volontari[j] > turisti[i]){
-		dp(turisti, volontari, n, m, i+1, j+1, v+2);
+	if(i < n){
+		ret = max(dp(n, m, i+1, j, memo) + 1, ret);
 	}
-	else{
-		dp(turisti, volontari, n, m, i, j+1, v);
+	if(j < m){
+		ret = max(dp(n, m, i, j+1, memo), ret);
 	}
+	return ret;
 	
 }
 
 int main(){
 	#ifndef ONLINE_JUDGE
+    	// for getting input from input.txt
     	freopen("input.txt", "r", stdin);
+    	// for writing output to output.txt
     	freopen("output.txt", "w", stdout);
 	#endif
     
@@ -38,20 +41,21 @@ int main(){
     for(int tcase = 1; tcase <= t; tcase++){
     	int n, m;
     	cin >> n >> m;
-    	int turisti[n], volontari[m];
     	for(int i = 0 ; i < n ; i++){
     		cin >> turisti[i];
     	}
     	for(int i = 0 ; i < m ; i++){
     		cin >> volontari[i];
     	}
-    	dp(turisti, volontari, n, m, 0, 0, 0);
-    	cout << "Case #" << tcase << ": " <<  maxx << '\n';
-    	maxx = 0;
+    	
+    	vector < vector <int> > memo(n + 2, vector <int> (m + 2, -1));
+
+    	cout << "Case #" << tcase << ": " <<  dp(n, m, 0, 0, memo) << '\n';
     }
     
     return 0;
     
     
 }
+ 
  
