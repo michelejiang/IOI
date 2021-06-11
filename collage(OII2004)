@@ -1,0 +1,54 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+const int N = 1e6 + 10;
+
+int ans = N;
+
+/itero da 0 fino a n, ogni qualvolta posso unire due strisce considero il caso in cui li unisca e non.
+void dp(vector<int> v, vector<bool> close, int i, int s){
+	if(i == v.size()){
+		ans = min(ans, s);
+		return ;
+	}
+	for(int j = i - 1 ; j >= 0 ; j--){
+		if(v[i] == v[j] && close[j]){
+			for(int itr = i - 1 ; itr > j ; itr--) //se unisco due punti quelli al loro interno non sono piu' utilizzabili per essere uniti 41X***X.
+				close[itr] = false;
+			dp(v, close, i+1, s);
+		}
+	}
+	dp(v, close, i+1, s+1);
+}
+
+
+int main(){
+	#ifndef ONLINE_JUDGE
+    	freopen("input.txt", "r", stdin);
+    	freopen("output.txt", "w", stdout);
+	#endif 
+    ios::sync_with_stdio(0);cin.tie(0); cout.tie(0);
+    
+    
+   	int n, tmp, prec = -1;
+   	cin >> n;
+   	vector<int> v;
+   	for(int i = 0 ; i < n ; i++){ //elimino i numeri adiacenti uguali perche' posso considerarli come una singola striscia.
+   		cin >> tmp;
+   		if(tmp != prec)v.push_back(tmp);
+   		prec = tmp;
+   	}
+   	n = v.size();
+   	vector<bool> close(n);
+   	for(int i = 0 ; i < n ; i++)//il vettore close mi dice se quel colore lo posso unirlo con altre strisce.
+   		close[i] = true;
+   	dp(v, close, 0, 0);
+   	cout << ans;
+    
+    
+    return 0;
+    
+    
+}
+ 
